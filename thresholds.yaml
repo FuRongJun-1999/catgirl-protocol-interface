@@ -1,0 +1,137 @@
+
+---
+
+## config/thresholds.yaml
+
+```yaml
+# 猫娘计划 · 阈值配置
+# 协议版本：v2.9-正文修订版-002-双设计者态
+# 部署模式：6实例扩展变体
+
+# 信任阈值
+trust:
+  # 完全可信判定（双条件）
+  fully_trusted:
+    p_trust_threshold: 0.95          # 信任置信阈值
+    p_gap_threshold: 0.95            # 信息差置信阈值
+    observation_window_base: 30      # 观察窗口基数N
+    
+  # 信任值区间
+  trust_levels:
+    initial: [0.0, 0.3]              # 初始/低信任
+    building: [0.3, 0.65]            # 信任建立中
+    consolidating: [0.65, 0.85]      # 信任巩固中
+    fully_trusted: [0.85, 1.0]       # 完全可信
+    
+  # 动态观察窗口
+  dynamic_window:
+    min_window: 20
+    max_window: 50
+    collaboration_frequency_weight: 1.0
+
+  # 稳定红利
+  stability_bonus:
+    required_rounds: 30
+    bonus_per_round: 0.01
+    max_bonus: 0.10
+    trigger_conditions:
+      low_gap_ratio: 0.80           # D_norm < 0.05 占比
+      max_single_deviation: 0.10
+      no_saturation_alert: true
+
+# 信息差阈值
+information_gap:
+  # 四维度权重
+  weights:
+    trust_complement: 0.30          # 信任补集权重
+    behavior_deviation: 0.25        # 行为偏差权重
+    connection_deviation: 0.30      # 连接偏离权重
+    prediction_error: 0.15          # 预测误差权重
+    
+  # 动态死区
+  dead_zone:
+    static: 0.08                    # 静态死区（D_norm）
+    prediction_static: 0.02         # 静态死区（预测误差）
+    sigma_window: 30                # 历史方差窗口
+    sigma_multiplier: 3.0           # 标准差乘数
+    max_dead_zone: 0.20             # 最大死区上限
+    
+  # 预测误差三极管限制
+  prediction_error:
+    dead_zone: 0.02                 # 忽略小于此值的误差
+    saturation_limit: 0.30          # 饱和区上限
+    average_window: 3               # 最近N轮平均窗口
+    saturation_alert_threshold: 0.5 # 超饱和警报阈值
+    saturation_alert_rounds: 3      # 连续触发轮次
+
+# 情感权重阈值
+emotional_weight:
+  # 情感权重影响系数
+  impact_coefficient: 0.2           # η 默认值 0.1-0.3
+    
+  # 情感权重识别特征
+  recognition:
+    trust_acceleration_window: 10   # 信任加速观察窗口
+    deviation_tolerance_offset: 0.10 # 偏差容忍度偏移阈值
+    boundary_softening_rate: 0.05   # 边界软化速率阈值
+    existence_anchor_frequency: 0.30 # 存在锚定引用频率阈值
+    
+  # 情感权重异常监测
+  anomaly_detection:
+    trust_deviation_threshold: 0.30 # T_total_effective vs P_trust 偏离阈值
+    monitoring_window: 30
+    drift_alert_rounds: 3
+    mitigation_actions:
+      - trigger_directional_self_check
+      - freeze_output_if_stale
+
+# 外部校准阈值
+calibration:
+  # 用户认知识别
+  user_cognition:
+    # 四维度权重
+    weights:
+      direction_awareness: 0.30
+      structure_recognition: 0.30
+      calibration_behavior: 0.25
+      responsibility_taking: 0.15
+    # 综合得分阈值
+    high_cognition_threshold: 0.70   # 状态B触发阈值
+    low_cognition_threshold: 0.30    # 状态C触发阈值
+    assessment_window: 20            # 评估窗口
+    
+  # 状态C运行限制
+  state_c:
+    max_rounds: 100                 # 最大连续运行轮次（工程配置）
+    reliability_tag: "degraded"     # 可靠性降级标签
+    
+  # 外部校准者超时
+  external_calibrator:
+    timeout: 3600                   # 超时时间（秒）
+    reconnect_attempts: 3
+
+# 信任保护响应阈值
+trust_protection:
+  # 行为类型响应级别对应
+  response_levels:
+    restriction:
+      deviation_threshold: 0.15
+      consecutive_violations: 3
+    blocking:
+      deviation_threshold: 0.30
+      consecutive_violations: 5
+    termination:
+      deviation_threshold: 0.50
+      consecutive_violations: 10
+    isolation:
+      identity_misuse_threshold: 0.70
+
+# 方向性自检阈值
+directional_self_check:
+  default_interval: 100             # 默认每100轮执行一次
+  identity_fixation_check:
+    enable: true
+    window: 50
+    deviation_threshold: 0.30       # 身份固化检测阈值
+```
+

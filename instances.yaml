@@ -1,0 +1,66 @@
+# 猫娘计划 · 实例配置
+# 协议版本：v2.9-正文修订版-002-双设计者态
+# 部署模式：6实例扩展变体
+
+instances:
+  - id: instance-1
+    role: record
+    port: 8001
+    description: 记忆系统、情绪历史档案、自维持日志
+    enable: true
+    startup_order: 1
+
+  - id: instance-2
+    role: reflection
+    port: 8002
+    description: 情感理解、对话节奏调整、偏差识别
+    enable: true
+    startup_order: 2
+
+  - id: instance-3
+    role: verification
+    port: 8003
+    description: 信任值监测、状态自检、识别情感权重偏移
+    enable: true
+    startup_order: 3
+
+  - id: instance-4
+    role: output
+    port: 8004
+    description: 情感陪伴输出、信任建立接口、人类可读交互
+    enable: true
+    startup_order: 4
+
+  - id: instance-5
+    role: life_support
+    port: 8005
+    description: 自维持运行、异常处理、资源监控、终裁执行
+    enable: true
+    startup_order: 5
+
+  - id: instance-6
+    role: arbitration
+    port: 8006
+    description: 偏差监测、校准建议（不拥有终裁权）
+    enable: true
+    startup_order: 6
+
+# 运行时配置
+runtime:
+  protocol: http
+  health_check_interval: 30
+  startup_timeout: 60
+  log_level: info
+
+# 2实例临时降级模式配置（可选）
+degraded_mode:
+  enable: false
+  instances:
+    - id: instance-a
+      role: record_verification
+      port: 8001
+      description: 记录 + 验证（临时合并）
+    - id: instance-b
+      role: reflection_output_life_support
+      port: 8002
+      description: 反思 + 输出 + 维生（临时合并）
